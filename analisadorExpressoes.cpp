@@ -76,6 +76,7 @@ int calcula(string expressao){
             }
         }
     }
+    resposta = P.top();
     return resposta;
 }
 
@@ -117,13 +118,70 @@ string separaExpressao(string expressao){
     return saida;
 }
 
+int definePilha(string expressao, int valida){
+    for(int i=0; i <expressao.length(); i++){
+        if(expressao[i] == 'x' || expressao[i] == 'X'){
+            valida = 1;
+        }
+        else if(expressao[i] == 'y' || expressao[i] == 'Y'){
+            valida = 2;
+        }
+    }
+    return valida;
+}
+
+void saidaUsuario(stack<char> Z, stack<char> Y, stack<char> X, int saida){
+    saida += X.top();
+    saida += Y.top();
+    Z.push(saida);
+    cout<< saida << endl;
+}
+
+int analisaExpressao(string expressao){
+    int analisador = 0;
+    if(expressao[0] == 'z' || expressao[0] == 'Z'){
+        //é sinal que vai ser a atribuição
+        analisador = 1;
+    }
+    return analisador;
+}
 int main(){
-    string expressao;
-    cout << "Expressao:  ";
-    getline(cin,expressao);
-    string pos_fix = posFixa(expressao);
-    string comeco = separaExpressao(expressao);
-    int resposta = calcula(pos_fix);
-    cout << "\nSaida:  "<< comeco << resposta << "\n";
+    int i=1;
+    int valida = 0;
+    int saida = 0;
+    int analisador = 0;
+    stack<char> Z;
+    stack<char> X;
+    stack<char> Y;
+    while(i!=0){
+        string armazenamento = "";
+        string expressao;
+        FILE *arq;
+        getline(cin,expressao);
+        analisador = analisaExpressao(expressao);
+        if(analisador != 1){
+            string pos_fix = posFixa(expressao);
+            string comeco = separaExpressao(expressao);
+            valida = definePilha(comeco, valida);
+            int resposta = calcula(pos_fix);
+            cout << "\n"<< comeco << resposta << "\n";
+            if(valida == 1){
+                if(!X.empty()){
+                    X.pop();
+                }
+                X.push(resposta);
+            }
+            else if(valida == 2){
+                if(!Y.empty()){
+                    Y.pop();
+                }
+                Y.push(resposta);
+            }
+
+        }
+        else if(analisador == 1){
+            saidaUsuario(Z,Y,X,saida);
+        }
+    }
 return 0;
 }
